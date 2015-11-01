@@ -1,0 +1,7 @@
+
+{
+    "access_token"    :"c731f8aa7535ab20b009c4843318b94d1d86a756"
+    , "client_id"     :"Your apps Client ID (Required for oauth)"
+    , "client_secret" :"Your apps Client Secret (Required for oauth)"
+    , "redirect_uri"  :"Your apps Authorization Redirection URI (Required for oauth)"
+}
