@@ -22,7 +22,6 @@ function createActivity(id, DB, cb) {
 
 function getTransitionTime(id) {
    createActivity(id, this.activityDB, process);
-   
 };
 
 function partition(id) {
@@ -33,7 +32,7 @@ function process(id) {
    if (self.swim === null) {
       parseTriathlon();
    } 
-   else if(self.swimToRun === null) {
+   if(self.swimToRun === null) {
       parseTransitions();
    }
    console.log(self);
