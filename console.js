@@ -61,15 +61,23 @@ function printHelp() {
 
 function processPartition(activity)
 {
-   console.log('Stream Properties:');
+   print('Stream Properties:');
    for (i in activity.stream)
-      console.log(' - ' + activity.stream[i].type);
-}
+      print(' - ' + i);
+   print('\nSwim Object: ');
+   print(activity.swim);
+   print('\nRide Object: ');
+   print(activity.ride);
+   print('\nRun Object: ');
+   print(activity.run);
+};
 
 function processTransitions(activity)
 {
-   console.log('Stream Transitions:');
-   for (i in activity.stream[0].data)
-      if(activity.stream[2].data[i] === false)
-         console.log(' - ' + activity.stream[0].data[i]);
-}
+   print('Stream Transitions:');
+   for (i in activity.stream.time.data)
+      if(activity.stream.moving.data[i] === false)
+         console.log(' - ' + activity.stream.time.data[i] + 's ' + activity.stream.distance.data[i] + 'm');
+   console.log('\nSwim-Ride Transition Time and Duration: ' + activity.swimToRide.time + ' | ' + activity.swimToRide.duration + 's');
+   console.log('\nRide-Run  Transition Time and Duration: ' + activity.rideToRun.time + ' | '  + activity.rideToRun.duration + 's');
+};
