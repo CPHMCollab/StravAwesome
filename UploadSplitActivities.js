@@ -7,7 +7,8 @@ var uploadSplitStuff = {
 	 * type: 				string, "ride" "run" "swim"
 	 * start_date_local: 	ISO 8601 formatted date time
 	 * elapsed_time: 		integer, seconds
-	 * optional stuff...
+	 * description:			string, OPTIONAL
+	 * distance:  			float, meters, OPTIONAL
 	 */
 	uploadSplitActivities : function (swim, bike, run) {
 		//check objects for required parameters?
@@ -17,7 +18,7 @@ var uploadSplitStuff = {
 	}
 
 	doneFunc : function(data) {
-		console.log("successfully uploaded activity " + data.stuff);
+		console.log("successfully uploaded activity " + data);
 	}
 }
 
