@@ -1,18 +1,9 @@
 var EventEmitter = require("events").EventEmitter;
- 
-/*var ee = new EventEmitter();
-ee.on("someEvent", function () {
-          console.log("event has occured");
-          });
- 
-ee.emit("someEvent");
-*/
 var Activity = require('./Activity');
 
 function StravAwesome() {
    this.activityDB = {};
-   this.getTransitionTime = getTransitionTime;
-   this.partition = partition;
+   this.getActivity = getActivity;
 };
 
 function createActivity(id, DB, cb) {
@@ -20,35 +11,34 @@ function createActivity(id, DB, cb) {
       DB[id] = new Activity(id, cb);
 };
 
-function getTransitionTime(id) {
-   createActivity(id, this.activityDB, process);
-};
-
-function partition(id) {
-   createActivity(id, this.activityDB, process);
+function getActivity(id, callBack) {
+   activityDB = this.activityDB;
+   ee = new EventEmitter();
+   createActivity(id, activityDB, process);
+   ee.once(id, function(){callBack(activityDB[id])});
 };
 
 function process(id) {
-   if (self.swim === null) {
-      parseTriathlon();
+   if (activityDB[id].swim === null) {
+      parseTriathlon(id);
    } 
-   if(self.swimToRun === null) {
-      parseTransitions();
+   if (activityDB[id].swimToRide === null) {
+      parseTransitions(id);
    }
-   console.log(self);
+   ee.emit(id);
 };
 
 
-function parseTriathlon() {
+function parseTriathlon(id) {
    //Do magic regarding these
-   self.swim = 20;
-   self.run  = 30;
-   self.ride = 40;
+   activityDB[id].swim = 20;
+   activityDB[id].run  = 30;
+   activityDB[id].ride = 40;
 }
 
-function parseTransitions() {
-   self.swimToRide = 3;
-   self.rideToRun = 5;
+function parseTransitions(id) {
+   activityDB[id].swimToRide = 3;
+   activityDB[id].rideToRun = 5;
 }
 
 module.exports = StravAwesome;

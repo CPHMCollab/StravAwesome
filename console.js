@@ -44,10 +44,10 @@ function printHelp() {
    }
    switch (process.argv[2]) {
       case 'p':
-         sA.partition(process.argv[3]);
+         sA.getActivity(Number(process.argv[3]), processPartition);
          break;
       case 'tt':
-         sA.getTransitionTime(Number(process.argv[3]));
+         sA.getActivity(Number(process.argv[3]), processTransitions);
          break;
       case 'h':
          printHelp();
@@ -58,3 +58,18 @@ function printHelp() {
          break;
    }
 })();
+
+function processPartition(activity)
+{
+   console.log('Stream Properties:');
+   for (i in activity.stream)
+      console.log(' - ' + activity.stream[i].type);
+}
+
+function processTransitions(activity)
+{
+   console.log('Stream Transitions:');
+   for (i in activity.stream[0].data)
+      if(activity.stream[2].data[i] === false)
+         console.log(' - ' + activity.stream[0].data[i]);
+}
