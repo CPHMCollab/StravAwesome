@@ -6,8 +6,8 @@ StravAwesome is an API written in NodeJS that uses Strava's API in order to brea
 ### Activity
 
 
-
 **Attributes**
+
 Field|Type|Description
 ---:|:---|:---
 id|integer|The ID corrosponding to a Strava activity's ID
