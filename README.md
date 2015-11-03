@@ -1,16 +1,65 @@
 # StravAwesome
-StravAwesome is an API written in NodeJS that uses Strava's API in order to break down uploaded Triathlon files.
-Strava users tend to upload triathlons as one continuous file and our API partitions this file into the three 
-respective race components for a triathlon (swim, bike, run). Each component may then be uploaded as separate 
-segments to Strava for future reference. In addition to partitioning the components, our API also attempts to 
-accurately determine transition time between the race components.
+StravAwesome is an API written in NodeJS that uses Strava's API in order to break down uploaded Triathlon files. Strava users tend to upload triathlons as one continuous file and the API partitions this activity into the three respective race components for a triathlon (swim, bike, run). Each component may then be uploaded as separate segments to Strava. In addition to partitioning the components, our API also determines transition time between the race components.
 
-## API Endpoints
-* `partition(activityID)`
- * The partition endpoint requires the Activity ID for the file that was uploaded to Strava.
- * Given the Activity ID, it will create three activities (bike, swim, run) from the original activity and 
-return a JSON object containing the three Activity IDs of the newly made activities.
+## Reference
 
-* `getTransitionTimes(activityID)`
- * The getTransitionTimes endpoint requires the Activity ID for the file that was uploaded to Strava.
- * Given the Activity ID, this endpoint will attempt to accurately determine the transition times for each race component and will return a JSON object containing the two labeled transition times.
+### Activity
+
+
+
+**Attributes**
+Field|Type|Description
+---:|:---|:---
+id|integer|The ID corrosponding to a Strava activity's ID
+swim|object|[A Strava activity object](https://strava.github.io/api/v3/activities)
+ride|object|[A Strava activity object](https://strava.github.io/api/v3/activities)
+run|object|[A Strava activity object](https://strava.github.io/api/v3/activities)
+
+
+
+#### Retrieve an activity
+This API endpoint retrieves a StravAwesome activity from a ID provided. If such an activity doesn't exist, it then attempts to create a StravAwesome activity object from the Strava activity ID provided. 
+
+##### Usage
+`GET /activity/:id`
+
+##### Parameters
+Field|Type|Description
+---:|:---|:---
+id|integer|The Strava activity ID number
+
+##### Success 200
+Returns the corresponding Activity object
+
+##### Error 4xx
+Field|Description
+---:|:---
+ActivityNotFound|The id of the activity was not found
+UnknownActivity|The activity was found but couldn't be parsed as a triathlon
+AuthError|An error occurred with authentication or permissions
+
+
+
+#### Retrieve an activity's transition times
+This API endpoint retrieves the transition times of a StravAwesome activity from a ID provided. If such an activity doesn't exist, it then attempts to create a StravAwesome activity object from the Strava activity ID provided and then return such transition times.
+
+##### Usage
+`GET /activity/transitions/:id`
+
+##### Parameters
+Field|Type|Description
+---:|:---|:---
+id|integer|The Strava activity ID number
+
+##### Success 200
+Field|Type|Description
+---:|:---|:---
+swimTransition|integer|Time in seconds between finishing a swim and starting a ride
+rideTransition|integer|Time in seconds between finishing a ride and starting a run
+
+##### Error 4xx
+Field|Description
+---:|:---
+ActivityNotFound|The id of the activity was not found
+UnknownActivity|The activity was found but couldn't be parsed as a triathlon
+AuthError|An error occurred with authentication or permissions
