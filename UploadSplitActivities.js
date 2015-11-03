@@ -10,15 +10,23 @@ var uploadSplitStuff = {
 	 * description:			string, OPTIONAL
 	 * distance:  			float, meters, OPTIONAL
 	 */
-	uploadSplitActivities : function (swim, bike, run) {
-		//check objects for required parameters?
-		strava.activities.create(swim, this.doneFunc);
-		strava.activities.create(bike, this.doneFunc);
-		strava.activities.create(run, this.doneFunc);
+	uploadSplitActivities : function (swim, bike, run, done) {
+		//check objects for required parameters
+		if (checkArgs(swim) && checkArgs(bike) && checkArgs(run)) {
+			strava.activities.create(swim, done);
+			strava.activities.create(bike, done);
+			strava.activities.create(run, done);
+		}
 	}
 
-	doneFunc : function(data) {
-		console.log("successfully uploaded activity " + data);
+	checkArgs : function(args) {
+		if (typeof args.name === 'undefined' ||
+			typeof args.type === 'undefined' ||
+			typeof args.start_date_local === 'undefined' ||
+			typeof args.elapsed_time === 'undefined')
+			return false;
+		else
+			return true;
 	}
 }
 
