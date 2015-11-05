@@ -1,9 +1,13 @@
 {
   "name": "StravAwesome",
+  "main": "server.js",
   "version": "1.0.0",
   "description": "StravAwesome is an API written in NodeJS that uses Strava's API in order to break down uploaded Triathlon files.",
-  "main": "StravAwesome.js",
   "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "mongoose": "^4.2.4",
+    "polyline": "^0.2.0",
     "strava-v3": "^1.8.1"
   },
   "devDependencies": {},

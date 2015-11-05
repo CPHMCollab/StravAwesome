@@ -9,6 +9,8 @@ function StravAwesome() {
 function createActivity(id, DB, cb) {
    if (!(id in DB))
       DB[id] = new Activity(id, cb);
+   else
+      cb();
 };
 
 function getActivity(id, callBack) {
