@@ -9,6 +9,7 @@ var sA = new StravAwesome();
 var print = console.log;
 
 var commands = {
+   "a " : "all",
    "p " : "partition",
    "tt" : "getTransitionTime",
    "h " : "help"
@@ -26,28 +27,28 @@ function printHelp() {
 }
 
 (function main() {
-   if (process.argv.length != 4) {
-      printHelp();
-      
-      if(process.argv.length != 3 || process.argv[2] != 'tt')
+   if (!(process.argv.length === 3 && process.argv[2] === 'a')) {
+      if (process.argv.length != 4) {
+         printHelp();
+         return;   
+      } else if (isNaN(process.argv[3])) {
+         print("Invalid argument: " + process.argv[3]);
+         printHelp();
          return;
-   }
-
-   if (isNaN(process.argv[3])) {
-      print("Invalid argument: " + process.argv[3]);
-      printHelp();
-      
-      return;
-   }
-   else if (process.argv[3] = '0') {
-      process.argv[3] = 62449636;
+      } else if (process.argv[3] === '0') {
+         print('ID 0 Invalid. Defaulting to 62449636');
+         process.argv[3] = 62449636;
+      }
    }
    switch (process.argv[2]) {
+      case 'a':
+         sA.getAll(processAll);
+         break;
       case 'p':
-         sA.getActivity(Number(process.argv[3]), processPartition);
+         sA.getActivity(process.argv[3], processPartition);
          break;
       case 'tt':
-         sA.getActivity(Number(process.argv[3]), processTransitions);
+         sA.getTransitionTimes(process.argv[3], processTransitions);
          break;
       case 'h':
          printHelp();
@@ -59,25 +60,32 @@ function printHelp() {
    }
 })();
 
-function processPartition(activity)
+function processAll(payload) {
+   console.log(payload);
+}
+
+function processPartition(err, payload)
 {
-   print('Stream Properties:');
-   for (i in activity.stream)
-      print(' - ' + i);
-   print('\nSwim Object: ');
-   print(activity.swim);
-   print('\nRide Object: ');
-   print(activity.ride);
-   print('\nRun Object: ');
-   print(activity.run);
+   if(err)
+      print(payload);
+   else {
+      print('Activity ' + payload.id + ':');
+      print('\nSwim Object: ');
+      print(payload.swim);
+      print('\nRide Object: ');
+      print(payload.ride);
+      print('\nRun Object: ');
+      print(payload.run);
+   }
 };
 
-function processTransitions(activity)
+function processTransitions(err, payload)
 {
-   print('Stream Transitions:');
-   for (i in activity.stream.time.data)
-      if(activity.stream.moving.data[i] === false)
-         console.log(' - ' + activity.stream.time.data[i] + 's ' + activity.stream.distance.data[i] + 'm');
-   console.log('\nSwim-Ride Transition Time and Duration: ' + activity.swimToRide.time + ' | ' + activity.swimToRide.duration + 's');
-   console.log('\nRide-Run  Transition Time and Duration: ' + activity.rideToRun.time + ' | '  + activity.rideToRun.duration + 's');
+   if (err)
+      print(payload);
+   else {
+      print('Activity ' + payload.id + ':');
+      print('\nSwim-Ride Transition: ' + payload.swimToRide + 's');
+      print('\nRide-Run  Transition: ' + payload.rideToRun + 's');
+   }
 };

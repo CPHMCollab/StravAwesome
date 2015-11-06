@@ -5,23 +5,38 @@ StravAwesome is an API written in NodeJS that uses Strava's API in order to brea
 
 ### Activity
 
-
 **Attributes**
 
 Field|Type|Description
 ---:|:---|:---
-id|integer|The ID corrosponding to a Strava activity's ID
+id|integer|The ID corresponding to a Strava activity's ID
 swim|object|[A Strava activity object](https://strava.github.io/api/v3/activities)
 ride|object|[A Strava activity object](https://strava.github.io/api/v3/activities)
 run|object|[A Strava activity object](https://strava.github.io/api/v3/activities)
 
+#### Retrieve all activities
+This API endpoint retrieves all StravAwesome activities currently stored in the DB. Calls made on opposite sides of a database refresh are not guaranteed to have the same data. 
 
+##### Usage
+`GET /api/activity/`
+
+##### Success 200
+Returns an object containing every Activity with their strava ID as their property name.
+
+##### Error 4xx
+Field|Description
+---:|:---
+ActivityNotFound|The Strava activity with the same ID could not be found
+BadActivity|The activity was found but couldn't be parsed as a triathlon
+BadParameter|The provided parameter was not an integer or was poorly formatted
+AuthError|An error occurred with authentication or permissions
+TheWorstKindOfError|An unexpected error has occured
 
 #### Retrieve an activity
 This API endpoint retrieves a StravAwesome activity from a ID provided. If such an activity doesn't exist, it then attempts to create a StravAwesome activity object from the Strava activity ID provided. 
 
 ##### Usage
-`GET /activity/:id`
+`GET /api/activity/:id`
 
 ##### Parameters
 Field|Type|Description
@@ -34,9 +49,11 @@ Returns the corresponding Activity object
 ##### Error 4xx
 Field|Description
 ---:|:---
-ActivityNotFound|The id of the activity was not found
-UnknownActivity|The activity was found but couldn't be parsed as a triathlon
+ActivityNotFound|The Strava activity with the same ID could not be found
+BadActivity|The activity was found but couldn't be parsed as a triathlon
+BadParameter|The provided parameter was not an integer or was poorly formatted
 AuthError|An error occurred with authentication or permissions
+TheWorstKindOfError|An unexpected error has occured
 
 
 
@@ -44,7 +61,7 @@ AuthError|An error occurred with authentication or permissions
 This API endpoint retrieves the transition times of a StravAwesome activity from a ID provided. If such an activity doesn't exist, it then attempts to create a StravAwesome activity object from the Strava activity ID provided and then return such transition times.
 
 ##### Usage
-`GET /activity/transitions/:id`
+`GET /api/activity/:id/transitions`
 
 ##### Parameters
 Field|Type|Description
@@ -52,14 +69,13 @@ Field|Type|Description
 id|integer|The Strava activity ID number
 
 ##### Success 200
-Field|Type|Description
----:|:---|:---
-swimTransition|integer|Time in seconds between finishing a swim and starting a ride
-rideTransition|integer|Time in seconds between finishing a ride and starting a run
+Returns an object containing an integer swimToRide and integer rideToRun to respectively indicate the amount of seconds between finishing a swim and starting a ride, and the seconds between finishing a ride and starting a run.
 
 ##### Error 4xx
 Field|Description
 ---:|:---
-ActivityNotFound|The id of the activity was not found
-UnknownActivity|The activity was found but couldn't be parsed as a triathlon
+ActivityNotFound|The Strava activity with the same ID could not be found
+BadActivity|The activity was found but couldn't be parsed as a triathlon
+BadParameter|The provided parameter was not an integer or was poorly formatted
 AuthError|An error occurred with authentication or permissions
+TheWorstKindOfError|An unexpected error has occuredu
