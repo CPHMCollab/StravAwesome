@@ -3,6 +3,12 @@ StravAwesome is an API written in NodeJS that uses Strava's API in order to brea
 
 ## Reference
 
+#### Test Call
+##### Usage
+`GET /api/`
+##### Success 200
+Returns 'Connection succesful: StravAwesome API vXX.XX.XX'
+
 ### Activity
 
 **Attributes**
@@ -78,4 +84,4 @@ ActivityNotFound|The Strava activity with the same ID could not be found
 BadActivity|The activity was found but couldn't be parsed as a triathlon
 BadParameter|The provided parameter was not an integer or was poorly formatted
 AuthError|An error occurred with authentication or permissions
-TheWorstKindOfError|An unexpected error has occuredu
+TheWorstKindOfError|An unexpected error has occured

@@ -11,13 +11,6 @@ var mostLikelyActivity = {
 	* 	NOT YET IMPLEMENTED
 	*
 	*/
-
-
-
 	}
-
-
-
-
 }
 module.exports = getMostLikelyActivity;

@@ -7,7 +7,7 @@ function StravAwesome() {
    this.getAll             = getAll;
 };
 
-//rudimentary caching and DB get
+// rudimentary caching and DB get
 function retrieve(id, db, callback) {
    if (!(id in db)) {
       db[id] = new Activity(id, function(err, id){callback(err, id)});
