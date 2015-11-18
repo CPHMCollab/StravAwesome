@@ -66,6 +66,7 @@ TheWorstKindOfError|An unexpected error has occured
 #### Retrieve an activity's transition times
 This API endpoint retrieves the transition times of a StravAwesome activity from a ID provided. If such an activity doesn't exist, it then attempts to create a StravAwesome activity object from the Strava activity ID provided and then return such transition times.
 
+A newer version of this function is currently in development, and is viewable in Activity_Test.js
 ##### Usage
 `GET /api/activity/:id/transitions`
 
@@ -76,7 +77,10 @@ id|integer|The Strava activity ID number
 
 ##### Success 200
 Returns an object containing an integer swimToRide and integer rideToRun to respectively indicate the amount of seconds between finishing a swim and starting a ride, and the seconds between finishing a ride and starting a run.
-
+Field|Type
+---:|:---
+swimToRide|transition's start time, end time, and duration
+bikeToRun|transition's start time, end time, and duration
 ##### Error 4xx
 Field|Description
 ---:|:---
