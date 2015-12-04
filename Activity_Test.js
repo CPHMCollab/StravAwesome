@@ -70,30 +70,49 @@ function process(err, payload, callback, type)
 		  break; 
 		}
 	  }
+	  //for first transition
 	  var transitionStarts = new Array();
 	  var transitionEnds = new Array();
+	  
+	  var transitionStartsBike = new Array();
+	  
+	  var transitionEndsBike =  new Array();
 	  //should be somewhere between 0.8 and 2
 	  var swimAverage;
+	  //should be relatively large
 	  var bikeAverage;
+	  //most likely in between swim and bike
+	  var runAverage;
+	  
 	  var sum = 0;
 	  var k;
+	  
 		for(k = 2; k < minDistance - 1; k++ ){
     		sum += parseInt(stream.velocity_raw[k]); //don't forget to add the base
 		}
 		swimAverage = sum/((minDistance - 1) - 2);
+		sum = 0;
 		for(k = maxDistance + 6; k < (maxDistance + 12); k++) {
 			sum += parseInt(stream.velocity_raw[k]);	
 		}
 		bikeAverage = sum/6;
+		sum = 0;
+		for(k = maxDistanceBike + 6; k < (maxDistanceBike + 12); k++) {
+			sum+= parseInt(stream.velocity_raw[k]);	
+		}
+		runAverage = sum/6;
 	  //much neater this way
-	  var ti;
-	  var tf;
-	  var dv;
+	  var ti; //time initial
+	  var tf; // time final
+	  var dv; // change in delocity
+	  
+	  //First we compute the swim to bike transition
+	  //Work decrementally for reliability
 	  for(i = maxDistance; i >= minDistance; i--) {
 	      ti = steam.velocity_raw[i - 1];
 		  tf = stream.velocity_raw[i];
 		  dv = ti - tf;
-		if (stream.moving[i] === false && !empty(transitionStarts)) {
+		if (stream.moving[i] === false) {
 		    var k = i - 2;
 			  for (var k = i -2; k < i + 2; k++) {
 				  if (transitionStarts.indexOf(k) == - 1) {
@@ -101,98 +120,101 @@ function process(err, payload, callback, type)
 				  }
 				  //improved confidence index through array swap
 				  else if(transitionStarts.indexOf(k) > 1) {
-					 var temp = transitionStarts[a];
+					 var temp = transitionStarts[k];
 					 transitionStarts[k] = transitionStarts[k-1];
 					 transitionStarts[k-1] = temp;
 				  }
 			  }
 			  i-=3;
 	   }
-	    else if ((dv < 0) && (tf < (swimAverage/2))) {
-		   if (transitionStarts.indexOf(i) == - 1) {
-		      transitionStarts.push(i); 
-		    }
-		   else if(transitionStarts.indexOf(k) > 1) {
-			    var temp = transitionStarts[a];
-			    transitionStarts[k] = transitionStarts[k-1];
-				transitionStarts[k-1] = temp;
-			  }
-		  }
+	    
 		  //time to check for transitionEnds
+		  //Our previous approach will not work here; earlier nodes ought to be favoured
 		  else if ((dv > 0) && (tf > swimAverage*1.5) && Math.abs(tf - bikeAverage) <= 3) {
 			  if (transitionEnds.indexOf(i) == - 1) {
 		      transitionEnds.push(i); 
 		    }
-		   else if(transitionEnds.indexOf(k) > 1) {
-			    var temp = transitionEnds[a];
-			    transitionEnds[k] = transitionEnds[k-1];
-				transitionEnds[k-1] = temp;
-			  }
 		  }
 	  }
-	  //by now, we will have milled through all possibilities for nodes
+	  /**
+	  * TODO: Implement error checking on prospective nodes
+	  * basic task here should be to make sure that the distance difference is less than, say, 200m
+	  */
 	  if(transitionStarts.lengh > 1 && transitionEnds.length > 1) {
-		 Activity.swimToRide = new Array(transitionStarts[0], transitionEnds[0], stream.time[transitionEnds[0]]
-		  - stream.time[transitionStarts[0]]);
+		 Activity.swimToRide = new Array(transitionStarts[0], transitionEnds[transitionEnds.length - 1], stream.time[transitionEnds[transitionEnds.length - 1]] - stream.time[transitionStarts[0]]);
 	  }
 	  else {
 		  console.log("algorithm failed");  
 	  }
 	  
-   }
 	  
-	  
-	  /*
-	  for(i = minDistance; i < maxDistance; i++) {
-		  ti = steam.velocity_raw[i-1];
+
+	  //moving on, it is time to compute the second transition
+	  for(i = maxDistanceBike; i >= minDistanceBike; i--) {
+	      ti = steam.velocity_raw[i - 1];
 		  tf = stream.velocity_raw[i];
 		  dv = ti - tf;
-		  if (stream.moving[i] === false && !empty(transitionStarts)) {
-			  //we are now in reasonable position for a swimToRun transition node.
-			  //Strategy: push all nearby nodes to catch all possible starts of the transition
-			  //construct swimToRunNode(s) for each pertinent 
-			  var k = i - 2;
-			  for (var k = i -2; k < i + 2; k++) {
-				  if (transitionStarts.indexOf(k) == - 1) {
-					  transitionStarts.push(k);
+		if (stream.moving[i] === false) {
+		    var k = i - 2;
+			  for (var k = i - 1; k < i + 1; k++) {
+				  if (transitionStartsBike.indexOf(k) == - 1) {
+					  transitionStartsBike.push(k);
 				  }
 				  //improved confidence index through array swap
-				  else if(transitionStarts.indexOf(k) > 1) {
-					 var temp = transitionStarts[a];
-					 transitionStarts[k] = transitionStarts[k-1];
-					 transitionStarts[k-1] = temp;
+				  else if(transitionStartsBike.indexOf(k) > 1) {
+					 var temp = transitionStartsBike[k];
+					 transitionStartsBike[k] = transitionStartsBike[k-1];
+					 transitionStartsBike[k-1] = temp;
 				  }
 			  }
-			  i-=3;
-		  }
-		  else if ((dv < 0) && (tf < (swimAverage/2))) {
-		      if (transitionStarts.indexOf(i) == - 1) {
-		         transitionStarts.push(i); 
-			  }
-		  }  
-	  }
-	 
-	 
-	 
-      for (i = 1; i < stream.time.length - 1; i++)
-         if(stream.moving[i] === false) {
-            if (Activity.swimToRideOffset === undefined)
-               Activity.swimToRideOffset = stream.time[i];
-            else if (Activity.rideToRunOffset === undefined)
-               Activity.rideToRunOffset = stream.time[i];
-            time = stream.time[i];
-            while(stream.moving[++i] === false)
-               ;
-            duration = stream.time[i] - time;
-            breaks.push(duration);
-            --i;
-         }
+			  i--;
+	    }
+		else if ((dv < 0) && (tf < (bikeAverage/2))) {
+				if (transitionStartsBike.indexOf(i) == - 1) {
+					transitionStartsBike.push(i); 
+				}
+				else if(transitionStartsBike.indexOf(k) > 1) {
+			    	var temp = transitionStartsBike[k];
+			    	transitionStartsBike[k] = transitionStartsBike[k-1];
+					transitionStartsBike[k-1] = temp;
+			}
+	    }
+	} //end for
+	//we now have a propegated array of possible start times for this transition.
 
-      //dummy code until algorithm is made to return correct splitpoints
-      Activity.swimToRide = breaks[0];
-      Activity.rideToRun  = breaks[1];
-	  */
-   
+	for(i = 0; i < transitionStartsBike; i++) {
+		posStart = transitionStartsBike[i];
+		//max transition would be roughly 1 minute and change
+		//TODO: declare final
+		var paired = false;
+		for(k = posStart; k < posStart + 10; posStart++) {
+			//we are now close enough to the run average to call the transition set
+			if(Math.abs(stream.velocity_raw[k] - runAverage) < 1 && stream.moving[k] === true) {
+				if(transitionEndsBike.indexOf(k) == - 1) {
+					transitionEndsBike.push(k);
+				}
+				else {
+					var temp = transitionEndsBike[k];
+			    	transitionEndsBike[k] = transitionEndsBike[k-1];
+					transitionEndsBike[k-1] = temp;
+				}
+				paired = true;
+				break;
+			}
+		}
+		if(!paired) {
+			transitionStartsBike.splice(i,1);	
+		}
+	}
+	if(transitionStartsBike.lengh > 1 && transitionEndsBike.length > 1) {
+		 Activity.rideToRun = new Array(transitionStartsBike[transitionStartsBike.length - 1], transitionEndsBike[transitionEndsBike.length - 1], stream.time[transitionEndsBike[transitionEndsBike.length - 1]] - stream.time[transitionStartsBike[transitionStartsBike.length - 1]]);
+	  }
+	  else {
+		  console.log("algorithm failed");  
+	  }
+	
+	
+}
 
    function setActivities() {
       start = new Date(Activity.original.start_date_local).getTime();
