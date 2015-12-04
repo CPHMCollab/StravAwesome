@@ -88,17 +88,17 @@ function process(err, payload, callback, type)
 	  var k;
 	  
 		for(k = 2; k < minDistance - 1; k++ ){
-    		sum += parseInt(stream.velocity_raw[k]); //don't forget to add the base
+    		sum += parseInt(stream.velocity_smooth[k]); //don't forget to add the base
 		}
 		swimAverage = sum/((minDistance - 1) - 2);
 		sum = 0;
 		for(k = maxDistance + 6; k < (maxDistance + 12); k++) {
-			sum += parseInt(stream.velocity_raw[k]);	
+			sum += parseInt(stream.velocity_smooth[k]);	
 		}
 		bikeAverage = sum/6;
 		sum = 0;
 		for(k = maxDistanceBike + 6; k < (maxDistanceBike + 12); k++) {
-			sum+= parseInt(stream.velocity_raw[k]);	
+			sum+= parseInt(stream.velocity_smooth[k]);	
 		}
 		runAverage = sum/6;
 	  //much neater this way
@@ -109,8 +109,8 @@ function process(err, payload, callback, type)
 	  //First we compute the swim to bike transition
 	  //Work decrementally for reliability
 	  for(i = maxDistance; i >= minDistance; i--) {
-	      ti = steam.velocity_raw[i - 1];
-		  tf = stream.velocity_raw[i];
+	      ti = steam.velocity_smooth[i - 1];
+		  tf = stream.velocity_smooth[i];
 		  dv = ti - tf;
 		if (stream.moving[i] === false) {
 		    var k = i - 2;
@@ -151,8 +151,8 @@ function process(err, payload, callback, type)
 
 	  //moving on, it is time to compute the second transition
 	  for(i = maxDistanceBike; i >= minDistanceBike; i--) {
-	      ti = steam.velocity_raw[i - 1];
-		  tf = stream.velocity_raw[i];
+	      ti = steam.velocity_smooth[i - 1];
+		  tf = stream.velocity_smooth[i];
 		  dv = ti - tf;
 		if (stream.moving[i] === false) {
 		    var k = i - 2;
@@ -189,7 +189,7 @@ function process(err, payload, callback, type)
 		var paired = false;
 		for(k = posStart; k < posStart + 10; posStart++) {
 			//we are now close enough to the run average to call the transition set
-			if(Math.abs(stream.velocity_raw[k] - runAverage) < 1 && stream.moving[k] === true) {
+			if(Math.abs(stream.velocity_smooth[k] - runAverage) < 1 && stream.moving[k] === true) {
 				if(transitionEndsBike.indexOf(k) == - 1) {
 					transitionEndsBike.push(k);
 				}
