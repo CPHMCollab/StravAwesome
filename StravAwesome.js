@@ -10,7 +10,7 @@ function StravAwesome() {
 // rudimentary caching and DB get
 function retrieve(id, db, callback) {
    if (!(id in db)) {
-      db[id] = new Activity(id, function(err, id){callback(err, id)});
+      db[id] = new Activity(id, function(err, id){callback(err, db[id])});
    } else {
       callback(false, db[id]);
    }
